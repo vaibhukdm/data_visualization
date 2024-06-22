@@ -1,0 +1,71 @@
+#week 3 Assignment by Vaibhav Vijay Kadam
+import pandas as pd
+import numpy as np
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Generate date range
+dates = pd.date_range(start='2023-01-01', end='2023-12-31')
+
+# Generate synthetic data
+data = {
+    'Date': np.random.choice(dates, size=1000),
+    'Product_Category': np.random.choice(['Electronics', 'Furniture', 'Clothing', 'Groceries'], size=1000),
+    'Region': np.random.choice(['North', 'South', 'East', 'West'], size=1000),
+    'Sales_Amount': np.random.uniform(100, 1000, size=1000)
+}
+
+# Create DataFrame
+sales_data = pd.DataFrame(data)
+
+# Add month and day columns for further analysis
+sales_data['Month'] = sales_data['Date'].dt.month
+sales_data['Day'] = sales_data['Date'].dt.day
+
+# Display the first few rows of the dataset
+print(sales_data.head())
+
+import matplotlib.pyplot as plt
+
+# Aggregate sales by date
+daily_sales = sales_data.groupby('Date')['Sales_Amount'].sum().reset_index()
+
+# Line plot
+plt.figure(figsize=(10, 6))
+plt.plot(daily_sales['Date'], daily_sales['Sales_Amount'], marker='o')
+plt.title('Daily Sales Over Time')
+plt.xlabel('Date')
+plt.ylabel('Sales Amount')
+plt.grid(True)
+plt.show()
+import seaborn as sns
+
+# Aggregate sales by product category
+category_sales = sales_data.groupby('Product_Category')['Sales_Amount'].sum().reset_index()
+
+# Bar plot
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Product_Category', y='Sales_Amount', data=category_sales)
+plt.title('Total Sales by Product Category')
+plt.xlabel('Product Category')
+plt.ylabel('Sales Amount')
+plt.show()
+# Aggregate sales by month and product category
+heatmap_data = sales_data.pivot_table(values='Sales_Amount', index='Month', columns='Product_Category', aggfunc='sum')
+
+# Heatmap
+plt.figure(figsize=(10, 6))
+sns.heatmap(heatmap_data, annot=True, fmt=".1f", cmap='YlGnBu')
+plt.title('Sales Heatmap by Month and Product Category')
+plt.xlabel('Product Category')
+plt.ylabel('Month')
+plt.show()
+import plotly.express as px
+
+# Aggregate sales by product category
+category_sales = sales_data.groupby('Product_Category')['Sales_Amount'].sum().reset_index()
+
+# Pie chart
+fig = px.pie(category_sales, names='Product_Category', values='Sales_Amount', title='Sales Distribution by Product Category')
+fig.show()
